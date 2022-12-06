@@ -13,6 +13,8 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.net.toUri
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
@@ -35,6 +37,9 @@ object DataBaseSync {
     val db = Firebase.database("https://documentscanner-67991-default-rtdb.asia-southeast1.firebasedatabase.app")
     var userId : String? = null
 
+    var isDocumentListLoading: MutableLiveData<Boolean> = MutableLiveData<Boolean>()
+    var isPageLoading: MutableLiveData<Boolean> = MutableLiveData<Boolean>()
+
     const val storageUrl = "gs://documentscanner-67991.appspot.com"
 
     fun addDocument(doc: AppDocument) {
@@ -49,7 +54,8 @@ object DataBaseSync {
         userDocumentsRef.child(doc.name!!).setValue(null)
     }
 
-    fun fetchDocuments(progressBar: ProgressBar) {
+    fun fetchDocuments() {
+        isDocumentListLoading.value = true
         val userRootRef = db.getReference("Users/$userId/Documents")
         val documentsListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -63,7 +69,7 @@ object DataBaseSync {
                     }
                 }
                 DocStorage.doneDocs.value = documentsList
-                progressBar.visibility = View.GONE
+                isDocumentListLoading.value = false
             }
             override fun onCancelled(databaseError: DatabaseError) {
                 // Getting Post failed, log a message
@@ -82,20 +88,25 @@ object DataBaseSync {
         }
     }
 
+    private fun deleteDocFiles() {
+
+    }
+
     fun getPageFile(ref: String, context: Context, page: AppPage) {
+        isPageLoading.value = true
         FirebaseStorage.getInstance().getReferenceFromUrl(ref).downloadUrl.addOnSuccessListener {
+            Log.d("STORFIRE URI", it.toString())
            val job = GlobalScope.launch(Dispatchers.IO) {
-                val bitmap = Glide.with(context).asBitmap().load(it).submit().get()
+                val bitmap = Glide.with(context).asBitmap().load(it).timeout(60000).submit().get()
                 val path: String = MediaStore.Images.Media.insertImage(
                     context.contentResolver,
                     bitmap,
                     "Title",
                     null
                 )
-                Log.d("STORFIRE URI", path)
                 page.bitmap = path
-
-                Log.d("STOREFIRE", it.toString())
+                isPageLoading.postValue(false)
+                Log.d("STORFIRE", it.toString())
             }
         }
     }

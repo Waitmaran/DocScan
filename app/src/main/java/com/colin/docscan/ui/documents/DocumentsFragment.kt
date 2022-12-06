@@ -57,17 +57,28 @@ class DocumentsFragment : Fragment() {
                 )
 
             }
-            if(docs.size == 0) {
-                binding.textViewNoDoneDocs.visibility = View.VISIBLE
-            } else {
-                binding.textViewNoDoneDocs.visibility = View.GONE
-            }
+//            if(docs.size == 0) {
+//                binding.textViewNoDoneDocs.visibility = View.VISIBLE
+//            } else {
+//                binding.textViewNoDoneDocs.visibility = View.GONE
+//            }
            // Log.d("ABOBA", "ABOBA")
 //            DocStorage.setDoneDocs(documents)
         }
 
-        binding.progressBarLoading.visibility = View.VISIBLE
-        DataBaseSync.fetchDocuments(binding.progressBarLoading)
+        DataBaseSync.isDocumentListLoading.observe(viewLifecycleOwner) { isLoading ->
+            if(isLoading) {
+                binding.progressBarLoading.visibility = View.VISIBLE
+            } else {
+                binding.progressBarLoading.visibility = View.GONE
+                if(DocStorage.doneDocs.value?.size == 0) {
+                    binding.textViewNoDoneDocs.visibility = View.VISIBLE
+                }
+            }
+        }
+
+        //binding.progressBarLoading.visibility = View.VISIBLE
+        DataBaseSync.fetchDocuments()
 
 
         return root

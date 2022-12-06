@@ -16,12 +16,13 @@ import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.net.toUri
 import androidx.documentfile.provider.DocumentFile
+import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import java.io.FileOutputStream
 import java.io.IOException
 import kotlin.random.Random
 
-class PageAdapter(private val pages: MutableList<AppPage>, private val context: Context): RecyclerView.Adapter<PageAdapter.MyViewHolder>(){
+class PageAdapter(private val pages: MutableList<AppPage>, private val context: Context, private val lifecycleOwner: LifecycleOwner): RecyclerView.Adapter<PageAdapter.MyViewHolder>(){
 
     class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
         val imageView: ImageView = itemView.findViewById(R.id.imageViewItem)
@@ -48,10 +49,17 @@ class PageAdapter(private val pages: MutableList<AppPage>, private val context: 
         if(isExist) {
             holder.imageView.setImageURI(pages[position].bitmap?.toUri())
         } else {
-            holder.progressBar.visibility = View.VISIBLE
+            DataBaseSync.isPageLoading.observe(lifecycleOwner) { isLoading ->
+                if(isLoading) {
+                    holder.progressBar.visibility = View.VISIBLE
+                } else {
+                    holder.progressBar.visibility = View.GONE
+                    holder.imageView.setImageURI(pages[position].bitmap?.toUri())
+                }
+            }
             DataBaseSync.getPageFile(pages[position].imageDbUrl!!, context, pages[position])
             //notifyItemChanged(position)
-
+//Я В примоченко двгупс
             //pages[position].bitmap = newUri
             //holder.imageView.setImageURI(Uri.parse(newUri))
         }

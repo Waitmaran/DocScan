@@ -37,7 +37,7 @@ class NewDocumentActivity : AppCompatActivity() {
             }
 
             binding.textViewNewDocTitle.setText(doc.name)
-            binding.RecyclerViewDocuments.adapter = PageAdapter(doc.pages, this)
+            binding.RecyclerViewDocuments.adapter = PageAdapter(doc.pages, this, this)
         } else {
             binding.textViewNewDocTitle.hint = doc.name
             position = DocStorage.addUndoneDoc(doc)!!
@@ -128,7 +128,7 @@ class NewDocumentActivity : AppCompatActivity() {
             val page = AppPage(bitmap.toString(), doc.pages.size + 1, "")
 
             doc.addPage(page)
-            binding.RecyclerViewDocuments.adapter = PageAdapter(doc.pages, this)
+            binding.RecyclerViewDocuments.adapter = PageAdapter(doc.pages, this, this)
         }
     }
 
