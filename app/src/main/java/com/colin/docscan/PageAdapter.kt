@@ -3,6 +3,7 @@ package com.colin.docscan
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
@@ -12,6 +13,7 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.net.toUri
@@ -35,14 +37,12 @@ class PageAdapter(private val pages: MutableList<AppPage>, private val context: 
         return pages.size
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val isExist = try {
-            context.contentResolver.openInputStream( pages[position].bitmap?.toUri()!!)?.use {
-
-            }
+            context.contentResolver.openInputStream( pages[position].bitmap?.toUri()!!)?.use {}
             true
-        }
-        catch (e: IOException) {
+        } catch (e: IOException) {
             false
         }
 
@@ -65,7 +65,7 @@ class PageAdapter(private val pages: MutableList<AppPage>, private val context: 
         }
 
 
-        holder.textView.text = "Страница №${position}"
+        holder.textView.text = "Страница №${position+1}"
         holder.buttonDelete.setOnClickListener {
             pages.removeAt(position)
             notifyItemChanged(position)

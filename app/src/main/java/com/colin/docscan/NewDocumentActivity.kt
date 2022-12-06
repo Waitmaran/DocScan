@@ -37,6 +37,7 @@ class NewDocumentActivity : AppCompatActivity() {
             }
 
             binding.textViewNewDocTitle.setText(doc.name)
+            binding.textViewNewDocTitle.isEnabled = false
             binding.RecyclerViewDocuments.adapter = PageAdapter(doc.pages, this, this)
         } else {
             binding.textViewNewDocTitle.hint = doc.name
@@ -130,10 +131,5 @@ class NewDocumentActivity : AppCompatActivity() {
             doc.addPage(page)
             binding.RecyclerViewDocuments.adapter = PageAdapter(doc.pages, this, this)
         }
-    }
-
-    override fun finish() {
-        super.finish()
-
     }
 }
