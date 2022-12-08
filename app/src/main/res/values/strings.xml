@@ -17,4 +17,7 @@
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
+    <string name="add_doc">Добавить документ</string>
+    <string name="add_page">Добавить страницу</string>
+    <string name="doc_title">Название документа</string>
 </resources>

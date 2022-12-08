@@ -1,12 +1,7 @@
 package com.colin.docscan
 
-import com.google.firebase.database.IgnoreExtraProperties
-
-//@IgnoreExtraProperties
 class AppDocument(var name: String? = null, var docPages: List<AppPage>? = null) {
-     var _pages: MutableList<AppPage> = mutableListOf()
-
-
+    private var _pages: MutableList<AppPage> = mutableListOf()
 
     init {
         if(docPages != null) {
@@ -14,8 +9,11 @@ class AppDocument(var name: String? = null, var docPages: List<AppPage>? = null)
         }
     }
 
-    val pages: MutableList<AppPage>
+    var pages: MutableList<AppPage>
         get() = _pages
+        set(value) {
+            _pages = value
+        }
 
     fun addPage(page: AppPage) {
         _pages.add(page)

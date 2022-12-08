@@ -60,7 +60,7 @@ class ScanFragment : Fragment() {
             })
         }
 
-        binding.imageButtonScanCamera.setOnClickListener {
+        binding.floatingActionButton.setOnClickListener {
             val editDoneDocIntent = Intent(context, NewDocumentActivity::class.java)
             editDoneDocIntent.putExtra("Edit", false)
             startActivity(editDoneDocIntent)

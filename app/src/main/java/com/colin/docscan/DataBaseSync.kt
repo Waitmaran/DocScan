@@ -65,6 +65,7 @@ object DataBaseSync {
                     val doc: AppDocument? = ds.getValue(AppDocument::class.java)
                     if (doc != null) {
                         doc.name?.let { Log.d("DB", it) }
+                        Log.d("DB", doc.pages.size.toString())
                         documentsList.add(doc)
                     }
                 }

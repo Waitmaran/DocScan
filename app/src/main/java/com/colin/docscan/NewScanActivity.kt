@@ -41,11 +41,9 @@ class NewScanActivity : com.zynksoftware.documentscanner.ScanActivity() {
             MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values
         )!!
 
-
         contentResolver.openOutputStream(imageUri)?.use {
             BitmapFactory.decodeFile(imageFile?.path).compress(Bitmap.CompressFormat.JPEG, 95, it)
         }
-
 
         Log.d("URI", "URI: $imageUri")
         returnIntent.putExtra("image", imageUri)

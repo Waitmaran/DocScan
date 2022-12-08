@@ -3,29 +3,31 @@ package com.colin.docscan
 import DocStorage
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
-import android.widget.Toast
+import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.colin.docscan.databinding.ActivityNewDocumentBinding
-import com.huawei.hmf.tasks.Task
-import com.huawei.hms.mlsdk.MLAnalyzerFactory
-import com.huawei.hms.mlsdk.common.MLFrame
-import com.huawei.hms.mlsdk.text.MLLocalTextSetting
-import com.huawei.hms.mlsdk.text.MLText
-import com.huawei.hms.mlsdk.text.MLTextAnalyzer
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 
 class NewDocumentActivity : AppCompatActivity() {
     var doc = AppDocument("Doc${Random.nextInt()}")
     lateinit var binding: ActivityNewDocumentBinding
+    lateinit var pageAdapter: PageAdapter
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityNewDocumentBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         val position: Int
+        pageAdapter = PageAdapter(doc.pages, this, this)
 
         if(intent.extras?.get("Edit") as Boolean) {
             position = intent.extras?.get("EditPos") as Int
@@ -38,13 +40,22 @@ class NewDocumentActivity : AppCompatActivity() {
 
             binding.textViewNewDocTitle.setText(doc.name)
             binding.textViewNewDocTitle.isEnabled = false
+            Log.d("DB FAKE", doc.pages.size.toString())
             binding.RecyclerViewDocuments.adapter = PageAdapter(doc.pages, this, this)
         } else {
             binding.textViewNewDocTitle.hint = doc.name
             position = DocStorage.addUndoneDoc(doc)!!
         }
 
-        binding.buttonNewPage.setOnClickListener {
+        binding.switchRecognition.setOnClickListener {
+
+        }
+
+        binding.switchTranslate.setOnClickListener {
+
+        }
+
+        binding.floatingActionButtonShotPage.setOnClickListener {
             startActivityForResult(Intent(applicationContext, NewScanActivity::class.java), 999)
             if(intent.extras?.get("Edit") as Boolean) {
                 if(intent.extras?.get("Done") as Boolean) {
@@ -58,25 +69,44 @@ class NewDocumentActivity : AppCompatActivity() {
         }
 
         binding.buttonDocDone.setOnClickListener {
-            if(!binding.textViewNewDocTitle.text.toString().isEmpty()) {
-                doc.name = binding.textViewNewDocTitle.text.toString()
+            binding.buttonDocDone.isClickable = false
+            var count = 1
+
+            OcrHelper.progress.observe(this) { progress ->
+                binding.buttonDocDone.text = "Обработка документа: ${count}/${doc.pages.size} (${progress})"
             }
 
-            if(intent.extras?.get("Edit") as Boolean) {
-                if (intent.extras?.get("Done") as Boolean) {
-                    DocStorage.doneDocs.value?.set(position, doc)
-                } else {
-                    DocStorage.addDoneDoc(doc)
-                    DocStorage.removeUndoneDoc(doc)
+            GlobalScope.launch( Dispatchers.IO ) {
+                for (page in doc.pages) {
+                    OcrHelper.Init(cacheDir)
+                    val text = OcrHelper.recognize(Uri.parse(page.bitmap), this@NewDocumentActivity)
+                    page.text = text
+                    count++
+                    Log.d("RECOG", "COMPLETE")
                 }
-            } else {
-                DocStorage.addDoneDoc(doc)
-                DocStorage.removeUndoneDoc(doc)
-            }
+            }.invokeOnCompletion {
+                GlobalScope.launch(Dispatchers.Main) {
+                    if (!binding.textViewNewDocTitle.text.toString().isEmpty()) {
+                        doc.name = binding.textViewNewDocTitle.text.toString()
+                    }
 
-            DataBaseSync.updloadDocFiles(doc)
-            DataBaseSync.addDocument(doc)
-            finish()
+                    if (intent.extras?.get("Edit") as Boolean) {
+                        if (intent.extras?.get("Done") as Boolean) {
+                            DocStorage.doneDocs.value?.set(position, doc)
+                        } else {
+                            DocStorage.addDoneDoc(doc)
+                            DocStorage.removeUndoneDoc(doc)
+                        }
+                    } else {
+                        DocStorage.addDoneDoc(doc)
+                        DocStorage.removeUndoneDoc(doc)
+                    }
+
+                    DataBaseSync.updloadDocFiles(doc)
+                    DataBaseSync.addDocument(doc)
+                    finish()
+                }
+            }
         }
 
         binding.RecyclerViewDocuments.layoutManager = LinearLayoutManager(this)
@@ -89,45 +119,7 @@ class NewDocumentActivity : AppCompatActivity() {
         if (requestCode == 999) {
             val bitmap = data?.extras?.get("image") as Uri
 
-//            val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
-//            val image = InputImage.fromFilePath(this, bitmap)
-
-            val setting = MLLocalTextSetting.Factory()
-                .setOCRMode(MLLocalTextSetting.OCR_DETECT_MODE) // Specify languages that can be recognized.
-                .setLanguage("ru")
-                .create()
-
-            val analyzer: MLTextAnalyzer = MLAnalyzerFactory.getInstance().getLocalTextAnalyzer(setting)
-            val frame = MLFrame.fromFilePath(this, bitmap)
-
-            val task: Task<MLText> = analyzer.asyncAnalyseFrame(frame)
-            task.addOnSuccessListener {
-                Toast.makeText(
-                    this@NewDocumentActivity,
-                    "Text: ${it.stringValue}",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-                .addOnFailureListener { e ->
-                Toast.makeText(
-                    this@NewDocumentActivity,
-                    "Error: ${e?.message}",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-
-
-//            val result = recognizer.process(image)
-//                .addOnSuccessListener { visionText ->
-//                    Log.d("RECOGNIZER", visionText.text)
-//                }
-//                .addOnFailureListener { e ->
-//                    Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
-//                }
-
-
             val page = AppPage(bitmap.toString(), doc.pages.size + 1, "")
-
             doc.addPage(page)
             binding.RecyclerViewDocuments.adapter = PageAdapter(doc.pages, this, this)
         }

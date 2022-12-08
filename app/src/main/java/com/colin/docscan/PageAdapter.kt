@@ -2,10 +2,7 @@ package com.colin.docscan
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
-import android.provider.MediaStore
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,15 +11,10 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.annotation.RequiresApi
-import androidx.core.content.ContentProviderCompat.requireContext
-import androidx.core.graphics.drawable.toBitmap
 import androidx.core.net.toUri
-import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
-import java.io.FileOutputStream
 import java.io.IOException
-import kotlin.random.Random
 
 class PageAdapter(private val pages: MutableList<AppPage>, private val context: Context, private val lifecycleOwner: LifecycleOwner): RecyclerView.Adapter<PageAdapter.MyViewHolder>(){
 
@@ -31,6 +23,7 @@ class PageAdapter(private val pages: MutableList<AppPage>, private val context: 
         val textView: TextView = itemView.findViewById(R.id.textViewPageNumber)
         val buttonDelete: ImageButton = itemView.findViewById(R.id.imageButtonDeletePage)
         val progressBar: ProgressBar = itemView.findViewById(R.id.progressBarPage)
+        val view: View = itemView
     }
 
     override fun getItemCount(): Int {
@@ -58,13 +51,17 @@ class PageAdapter(private val pages: MutableList<AppPage>, private val context: 
                 }
             }
             DataBaseSync.getPageFile(pages[position].imageDbUrl!!, context, pages[position])
+
             //notifyItemChanged(position)
 //Я В примоченко двгупс
             //pages[position].bitmap = newUri
             //holder.imageView.setImageURI(Uri.parse(newUri))
         }
-
-
+        holder.view.setOnClickListener {
+            val int = Intent(context, TextPreviewActivity::class.java)
+            int.putExtra("text", pages[position].text)
+            context.startActivity(int)
+        }
         holder.textView.text = "Страница №${position+1}"
         holder.buttonDelete.setOnClickListener {
             pages.removeAt(position)
@@ -83,4 +80,5 @@ class PageAdapter(private val pages: MutableList<AppPage>, private val context: 
                 .inflate(R.layout.document_item, parent, false)
         return MyViewHolder(itemView)
     }
+
 }

@@ -1,4 +1,3 @@
-import android.icu.text.Transliterator.Position
 import androidx.lifecycle.MutableLiveData
 import com.colin.docscan.AppDocument
 
