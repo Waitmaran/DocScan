@@ -1,11 +1,15 @@
 package com.colin.docscan
 
 import android.app.Application
+import android.content.Context
 import android.graphics.Bitmap
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
 import com.zynksoftware.documentscanner.ui.DocumentScanner
 
-
 class ScannerApplication: Application()  {
+    val dataStore: DataStore<Preferences> by preferencesDataStore("recognizer_mode")
     override fun onCreate() {
         super.onCreate()
         val configuration = DocumentScanner.Configuration()

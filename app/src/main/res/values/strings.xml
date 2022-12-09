@@ -1,23 +1,31 @@
 <resources>
     <string name="app_name">DocScan</string>
-    <string name="title_home">Home</string>
+    <string name="title_home">Домашний экран</string>
     <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
-    <string name="camera_icon">Camera icon</string>
-    <string name="gallery_icon">Gallery icon</string>
-    <string name="title_scan">Scan</string>
-    <string name="documents">Documents</string>
-    <string name="deleteButton">delete</string>
-    <string name="title_activity_login">LoginActivity</string>
+    <string name="title_notifications">Уведомления</string>
+    <string name="camera_icon">Камера</string>
+    <string name="gallery_icon">Галлерея</string>
+    <string name="title_scan">Сканирование</string>
+    <string name="documents">Документы</string>
+    <string name="deleteButton">Удалить</string>
+    <string name="title_activity_login">Вход</string>
     <string name="prompt_email">Email</string>
-    <string name="prompt_password">Password</string>
+    <string name="prompt_password">Пароль</string>
     <string name="action_sign_in">Sign in or register</string>
-    <string name="action_sign_in_short">Sign in</string>
+    <string name="action_sign_in_short">Войти</string>
     <string name="welcome">"Welcome !"</string>
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
-    <string name="login_failed">"Login failed"</string>
+    <string name="login_failed">"Ошибка входа"</string>
     <string name="add_doc">Добавить документ</string>
     <string name="add_page">Добавить страницу</string>
     <string name="doc_title">Название документа</string>
+    <string name="settings_title">Настройки</string>
+    <string name="recognizer_mode_title">Режим распознавания: </string>
+    <string name="user_title">Пользователь: </string>
+    <string-array name="recognizer_modes">
+        <item>Быстрый</item>
+        <item>Точный</item>
+        <item>Баланс</item>
+    </string-array>
 </resources>

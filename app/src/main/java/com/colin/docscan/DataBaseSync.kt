@@ -23,6 +23,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
+
 @RequiresApi(Build.VERSION_CODES.Q)
 object DataBaseSync {
     private val db = Firebase.database("https://documentscanner-67991-default-rtdb.asia-southeast1.firebasedatabase.app")

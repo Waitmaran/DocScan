@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity() {
         // menu should be considered as top level destinations.
         val appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.navigation_scan, R.id.navigation_documents, R.id.navigation_notifications
+                R.id.navigation_scan, R.id.navigation_documents, R.id.navigation_settings
             )
         )
 
@@ -71,31 +71,42 @@ class MainActivity : AppCompatActivity() {
         navView.setupWithNavController(navController)
 
         val datapath = cacheDir.absolutePath + File.separator.toString() + "tessdata" + File.separator
-        if (!File( datapath + "rus" + ".traineddata").exists()) {
-            try {
-                val assetManager = assets
-                val `in`: InputStream =
-                    assetManager.open("rus" + ".traineddata")
-                Log.d("RECOG", "Input stream opened")
+        val models = arrayOf(
+            "rus",
+            "fast_rus",
+            "balance_rus",
+            "eng",
+            "fast_eng",
+            "balance_eng")
 
-                File(datapath + "rus.traineddata").parentFile?.mkdirs()
+        for(model in models) {
+            if (!File("$datapath$model.traineddata").exists()) {
+                try {
+                    val assetManager = assets
+                    val `in`: InputStream =
+                        assetManager.open("$model.traineddata")
+                    Log.d("RECOG", "Input stream opened")
 
-                val outFile = File(datapath, "rus.traineddata")
-                val out: OutputStream = FileOutputStream(outFile)
-                Log.d("RECOG", "Output stream opened")
+                    File("$datapath$model.traineddata").parentFile?.mkdirs()
 
-                val buf = ByteArray(8024)
-                var len: Int
-                while (`in`.read(buf).also { len = it } > 0) {
-                    out.write(buf, 0, len)
+                    val outFile = File(datapath, "$model.traineddata")
+                    val out: OutputStream = FileOutputStream(outFile)
+                    Log.d("RECOG", "Output stream opened")
+
+                    val buf = ByteArray(8024)
+                    var len: Int
+                    while (`in`.read(buf).also { len = it } > 0) {
+                        out.write(buf, 0, len)
+                    }
+                    `in`.close()
+                    out.close()
+                } catch (e: IOException) {
+                    Log.d("RECOG", "Was unable to copy rus traineddata $e")
                 }
-                `in`.close()
-                out.close()
-            } catch (e: IOException) {
-                Log.d("RECOG", "Was unable to copy rus traineddata $e")
+            } else {
+                Log.d("RECOG", "TRAINED FILE FOUND!")
             }
-        } else {
-            Log.d("RECOG", "TRAINED FILE FOUND!")
         }
+
     }
 }

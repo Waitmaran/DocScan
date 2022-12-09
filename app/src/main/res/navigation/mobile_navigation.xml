@@ -19,8 +19,8 @@
         tools:layout="@layout/fragment_documents" />
 
     <fragment
-        android:id="@+id/navigation_notifications"
-        android:name="com.colin.docscan.ui.notifications.NotificationsFragment"
-        android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
+        android:id="@+id/navigation_settings"
+        android:name="com.colin.docscan.ui.notifications.SettingsFragment"
+        android:label="@string/settings_title"
+        tools:layout="@layout/fragment_settings" />
 </navigation>
