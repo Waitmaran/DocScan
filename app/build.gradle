@@ -63,6 +63,7 @@ dependencies {
 
     implementation 'androidx.datastore:datastore-preferences:1.0.0'
     implementation 'com.google.mlkit:translate:17.0.1'
+    implementation("com.squareup.moshi:moshi:1.8.0")
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

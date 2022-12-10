@@ -23,9 +23,75 @@
     <string name="settings_title">Настройки</string>
     <string name="recognizer_mode_title">Режим распознавания: </string>
     <string name="user_title">Пользователь: </string>
+    <string name="Login_title">Вход</string>
+    <string name="login_with_google_tiltle_e">Войти с Google аккаунтом</string>
+    <string name="offline_mode_title">Офлайн режим</string>
+    <string name="image_quality_title">Качество изображения при съемке (влияет на скорость и точность распознавания): </string>
     <string-array name="recognizer_modes">
         <item>Быстрый</item>
         <item>Точный</item>
         <item>Баланс</item>
+    </string-array>
+    <string-array name="translator_languages">
+        <item>Русский</item>
+        <item>Английский</item>
+        <item>Африкаанс</item>
+        <item>Арабский</item>
+        <item>Белорусский</item>
+        <item>Болгарский</item>
+        <item>Бенгальский</item>
+        <item>Каталонский</item>
+        <item>Чешский</item>
+        <item>Валлийский</item>
+        <item>Датский</item>
+        <item>Немецкий</item>
+        <item>Греческий</item>
+        <item>Эсперанто</item>
+        <item>Испанский</item>
+        <item>Эстонский</item>
+        <item>Персидский</item>
+        <item>Финский</item>
+        <item>Французский</item>
+        <item>Ирландский</item>
+        <item>галисийский</item>
+        <item>Гуджарати</item>
+        <item>Иврит</item>
+        <item>Иврит</item>
+        <item>Хорватский</item>
+        <item>Гаитянский</item>
+        <item>Венгерский</item>
+        <item>Индонезийский</item>
+        <item>Исландский</item>
+        <item>Итальянский</item>
+        <item>Японский</item>
+        <item>Грузинский</item>
+        <item>Каннада</item>
+        <item>Корейский</item>
+        <item>Литовский</item>
+        <item>Латышский</item>
+        <item>Литовский</item>
+        <item>Македонский</item>
+        <item>Маратхи</item>
+        <item>Малайский</item>
+        <item>Мальтийский</item>
+        <item>Голландский</item>
+        <item>Норвежский</item>
+        <item>Польский</item>
+        <item>Португальский</item>
+        <item>Румынский</item>
+        <item>Словацкий</item>
+        <item>Словенский</item>
+        <item>Албанский</item>
+        <item>Шведский</item>
+        <item>Суахили</item>
+        <item>Тамильский</item>
+        <item>Телугу</item>
+        <item>Тайский</item>
+        <item>Тагальский</item>
+        <item>Турецкий</item>
+        <item>Украинcкий</item>
+        <item>Урду</item>
+        <item>Вьетнамский</item>
+        <item>Китайский</item>
     </string-array>
 </resources>

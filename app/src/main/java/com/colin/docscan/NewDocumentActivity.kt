@@ -6,12 +6,21 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.datastore.preferences.core.emptyPreferences
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.colin.docscan.databinding.ActivityNewDocumentBinding
 import com.colin.docscan.ui.notifications.SettingsFragment
+import com.google.mlkit.common.model.DownloadConditions
+import com.google.mlkit.nl.translate.TranslateLanguage
+import com.google.mlkit.nl.translate.Translation
+import com.google.mlkit.nl.translate.TranslatorOptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.Flow
@@ -19,12 +28,11 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import java.io.IOException
 import kotlin.random.Random
 
 class NewDocumentActivity : AppCompatActivity() {
-
-
     private var recognition = false
     private var translation = false
     var doc = AppDocument("Doc${Random.nextInt()}")
@@ -76,19 +84,55 @@ class NewDocumentActivity : AppCompatActivity() {
             position = DocStorage.addUndoneDoc(doc)!!
         }
 
-//        binding.switchRecognition.setOnCheckedChangeListener { _, _ ->
-//
-//        }
-//
-//        binding.switchTranslate.setOnCheckedChangeListener { _, _ ->
-//
-//        }
-
-
         binding.floatingActionButtonShotPage.setOnClickListener {
             val intForScan = Intent(applicationContext, NewScanActivity::class.java)
             globPos = position
             startActivityForResult(intForScan, 999)
+        }
+
+        suspend fun translateText(text: String): String {
+            val options = TranslatorOptions.Builder()
+                .setSourceLanguage(TranslateLanguage.RUSSIAN)
+                .setTargetLanguage(TranslateLanguage.ENGLISH)
+                .build()
+            val translatorApi = Translation.getClient(options)
+            var conditions = DownloadConditions.Builder().build()
+            var success = true
+
+            try {
+                translatorApi.downloadModelIfNeeded(conditions)
+                    .addOnFailureListener {
+                        success = false
+                        throw it
+                    }
+                    .await()
+            } catch (exc: Exception) {
+                runOnUiThread {
+                    Toast.makeText(
+                        this@NewDocumentActivity,
+                        "Произошла ошибка во время скачивания данных для перевода!",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+
+            var translatedText = "Текст не был переведен"
+            if(success) {
+                try {
+                    translatorApi.translate(text).await().let {
+                        translatedText = it
+                    }
+                } catch (exc: Exception) {
+                    runOnUiThread {
+                        Toast.makeText(
+                            this@NewDocumentActivity,
+                            "Произошла ошибка во время перевода!",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }
+            return translatedText
         }
 
         binding.buttonDocDone.setOnClickListener {
@@ -107,9 +151,15 @@ class NewDocumentActivity : AppCompatActivity() {
                     Log.d("RECOG SETTINGS NEW DOC", pos.toString())
                     for (page in doc.pages) {
                         OcrHelper.Init(cacheDir, pos)
-                        val text =
-                            OcrHelper.recognize(Uri.parse(page.bitmap), this@NewDocumentActivity)
+                        val text = OcrHelper.recognize(Uri.parse(page.bitmap), this@NewDocumentActivity)
                         page.text = text
+                        if(translation) {
+                            runOnUiThread {
+                                binding.buttonDocDone.text =
+                                    "Обработка документа: ${count}/${doc.pages.size} (Выполняется перевод)"
+                            }
+                            page.translatedText = translateText(text)
+                        }
                         count++
                         Log.d("RECOG", "COMPLETE")
                     }
@@ -122,8 +172,43 @@ class NewDocumentActivity : AppCompatActivity() {
             }
             else {
                 Log.d("RECOG", "NOT DOING RECOG!")
-                manageDocs(position)
-                finish()
+                if (translation) {
+                    if(doc.pages.all { it.text == null }) {
+                        Toast.makeText(
+                            this@NewDocumentActivity,
+                            "Перевод не будет выполнен, нет расопзнанных страниц",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        manageDocs(position)
+                        finish()
+                    } else {
+                        GlobalScope.launch(Dispatchers.IO) {
+                            for (page in doc.pages) {
+                                if (page.text != null) {
+                                    runOnUiThread {
+                                        binding.buttonDocDone.text =
+                                            "Обработка документа: ${count}/${doc.pages.size} (Выполняется перевод)"
+                                    }
+                                    page.translatedText = translateText(page.text!!)
+                                } else {
+                                    runOnUiThread {
+                                        Toast.makeText(
+                                            this@NewDocumentActivity,
+                                            "Страница ${page.id} пропущена, так как не содержит текста.",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                }
+                            }
+                        }.invokeOnCompletion {
+                            manageDocs(position)
+                            finish()
+                        }
+                    }
+                } else {
+                    manageDocs(position)
+                    finish()
+                }
             }
         }
 
@@ -191,7 +276,6 @@ class NewDocumentActivity : AppCompatActivity() {
                 } else {
                     DocStorage.updateUndoneDoc(position, doc)
                 }
-
                 binding.RecyclerViewDocuments.adapter = PageAdapter(doc.pages, this, this)
             }
         }

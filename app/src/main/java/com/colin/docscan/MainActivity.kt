@@ -1,5 +1,6 @@
 package com.colin.docscan
 
+import DocStorage
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -8,19 +9,34 @@ import android.os.Bundle
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.emptyPreferences
+import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.colin.docscan.databinding.ActivityMainBinding
+import com.colin.docscan.ui.notifications.SettingsFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.squareup.moshi.JsonAdapter
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.Types
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import java.io.*
+import java.lang.reflect.Type
 
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private lateinit var token: String
+    lateinit var token: String
 
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -109,4 +125,6 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
+
 }
+

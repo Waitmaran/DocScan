@@ -60,6 +60,7 @@ class PageAdapter(private val pages: MutableList<AppPage>, private val context: 
         holder.view.setOnClickListener {
             val int = Intent(context, TextPreviewActivity::class.java)
             int.putExtra("text", pages[position].text)
+            int.putExtra("translatedText", pages[position].translatedText)
             context.startActivity(int)
         }
         holder.textView.text = "Страница №${position+1}"

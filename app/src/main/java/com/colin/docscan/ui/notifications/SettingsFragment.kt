@@ -10,6 +10,8 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.fragment.app.Fragment
+import com.colin.docscan.MainActivity
+import com.colin.docscan.R
 import com.colin.docscan.ScannerApplication
 import com.colin.docscan.databinding.FragmentSettingsBinding
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -42,6 +44,8 @@ class SettingsFragment : Fragment() {
 //            ViewModelProvider(this)[SettingsViewModel::class.java]
         _binding = FragmentSettingsBinding.inflate(inflater, container, false)
 
+        binding.textViewUserTitle.text = getString(R.string.user_title) + (activity as MainActivity).token
+
         suspend fun setRecognizerMode(mode: Int) {
             (context?.applicationContext as ScannerApplication).dataStore.edit { pref ->
                 pref[recognizerModeKey] = mode
@@ -49,7 +53,7 @@ class SettingsFragment : Fragment() {
         }
 
         fun getRecognizerMode(): Flow<Int> {
-            return (context?.applicationContext as ScannerApplication).dataStore.data
+            return (activity?.applicationContext as ScannerApplication).dataStore.data
                 .catch { exception ->
                     if (exception is IOException) {
                         emit(emptyPreferences())
