@@ -27,6 +27,8 @@
     <string name="login_with_google_tiltle_e">Войти с Google аккаунтом</string>
     <string name="offline_mode_title">Офлайн режим</string>
     <string name="image_quality_title">Качество изображения при съемке (влияет на скорость и точность распознавания): </string>
+    <string name="source_lang_title">Язык перевода</string>
+    <string name="save_pdf_title">Сохранить документ в пдф</string>
     <string-array name="recognizer_modes">
         <item>Быстрый</item>
         <item>Точный</item>
@@ -93,5 +95,67 @@
         <item>Урду</item>
         <item>Вьетнамский</item>
         <item>Китайский</item>
+    </string-array>
+    <string-array name="translator_languages_code">
+        <item>ru</item>
+        <item>en</item>
+        <item>af</item>
+        <item>ar</item>
+        <item>be</item>
+        <item>bg</item>
+        <item>bn</item>
+        <item>ca</item>
+        <item>cs</item>
+        <item>cy</item>
+        <item>da</item>
+        <item>de</item>
+        <item>el</item>
+        <item>eo</item>
+        <item>es</item>
+        <item>et</item>
+        <item>fa</item>
+        <item>fi</item>
+        <item>fr</item>
+        <item>ga</item>
+        <item>gl</item>
+        <item>gu</item>
+        <item>he</item>
+        <item>he</item>
+        <item>hr</item>
+        <item>ht</item>
+        <item>hu</item>
+        <item>id</item>
+        <item>is</item>
+        <item>it</item>
+        <item>ja</item>
+        <item>ka</item>
+        <item>nk</item>
+        <item>ko</item>
+        <item>lt</item>
+        <item>la</item>
+        <item>lt</item>
+        <item>mk</item>
+        <item>mr</item>
+        <item>ms</item>
+        <item>mt</item>
+        <item>nl</item>
+        <item>no</item>
+        <item>pl</item>
+        <item>pt</item>
+        <item>ro</item>
+        <item>sk</item>
+        <item>sl</item>
+        <item>sq</item>
+        <item>sv</item>
+        <item>sw</item>
+        <item>ta</item>
+        <item>te</item>
+        <item>th</item>
+        <item>tl</item>
+        <item>tr</item>
+        <item>uk</item>
+        <item>ur</item>
+        <item>vi</item>
+        <item>zh</item>
     </string-array>
 </resources>

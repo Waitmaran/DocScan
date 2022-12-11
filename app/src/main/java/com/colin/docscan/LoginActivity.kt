@@ -58,6 +58,13 @@ class LoginActivity : AppCompatActivity() {
             .setAutoSelectEnabled(true)
             .build()
 
+        binding.buttonOffline.setOnClickListener {
+            val int = Intent(this, MainActivity::class.java)
+            int.putExtra("token", "offline")
+            startActivity(int)
+            finish()
+        }
+
         binding.buttonLoginGoogle.setOnClickListener {
             oneTapClient.beginSignIn(signInRequest)
                 .addOnSuccessListener(this) { result ->

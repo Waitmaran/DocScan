@@ -46,7 +46,13 @@ class DocumentsFragment : Fragment() {
                                 DataBaseSync.removeDocument(DocStorage.doneDocs.value?.get(position)!!)
                                 DocStorage.removeDoneDoc(DocStorage.doneDocs.value?.get(position)!!)
                                 binding.RecyclerViewDoneDocuments.adapter!!.notifyItemChanged(position)
-                            } else {
+                            } else if(view.id == R.id.imageButtonSavePdf) {
+                                DocStorage.savePdf(
+                                    DocStorage.doneDocs.value?.get(position)!!,
+                                    requireActivity().contentResolver,
+                                    requireContext())
+                            }
+                            else {
                                 //val position = binding.RecyclerViewDoneDocuments.getChildLayoutPosition(view)
                                 val editDocIntent = Intent(context, NewDocumentActivity::class.java)
                                 editDocIntent.putExtra("Edit", true)
@@ -80,8 +86,12 @@ class DocumentsFragment : Fragment() {
         }
 
         //binding.progressBarLoading.visibility = View.VISIBLE
-        DataBaseSync.fetchDocuments()
-
+        if((activity as MainActivity).token == "offline") {
+            binding.textViewNoDoneDocs.text = "В оффлайн режиме невозможно загрузить данные, сохраненные в облаке!"
+            binding.textViewNoDoneDocs.visibility = View.VISIBLE
+        } else {
+            DataBaseSync.fetchDocuments()
+        }
 
         return root
     }

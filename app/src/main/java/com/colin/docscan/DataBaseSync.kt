@@ -39,12 +39,18 @@ object DataBaseSync {
     private const val storageUrl = "gs://documentscanner-67991.appspot.com"
 
     fun addDocument(doc: AppDocument) {
+        if(userId == "offline") {
+            return
+        }
         val userRootRef = db.getReference("Users/$userId")
         val userDocumentsRef = userRootRef.child("Documents")
         userDocumentsRef.child(toLatinTrans.transliterate(doc.name!!)).setValue(doc)
     }
 
     fun removeDocument(doc: AppDocument) {
+        if(userId == "offline") {
+            return
+        }
         val userRootRef = db.getReference("Users/$userId")
         val userDocumentsRef = userRootRef.child("Documents")
         userDocumentsRef.child(toLatinTrans.transliterate(doc.name!!)).setValue(null)
@@ -56,6 +62,9 @@ object DataBaseSync {
     }
 
     fun fetchDocuments() {
+        if(userId == "offline") {
+            return
+        }
         isDocumentListLoading.value = true
         val userRootRef = db.getReference("Users/$userId/Documents")
         val documentsListener = object : ValueEventListener {
@@ -82,6 +91,9 @@ object DataBaseSync {
     }
 
     fun updloadDocFiles(doc: AppDocument) {
+        if(userId == "offline") {
+            return
+        }
         val ref = FirebaseStorage.getInstance(storageUrl).reference
         for(page in doc.pages) {
             val imgRef = ref.child(userId!!).child(toLatinTrans.transliterate(doc.name!!)).child(page.id.toString()+".jpeg")
@@ -92,6 +104,9 @@ object DataBaseSync {
 
     @OptIn(DelicateCoroutinesApi::class)
     fun getPageFile(ref: String, context: Context, page: AppPage) {
+        if(userId == "offline") {
+            return
+        }
         isPageLoading.value = true
         FirebaseStorage.getInstance().getReferenceFromUrl(ref).downloadUrl.addOnSuccessListener {
             Log.d("STORFIRE URI", it.toString())

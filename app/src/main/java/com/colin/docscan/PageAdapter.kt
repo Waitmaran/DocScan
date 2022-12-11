@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import java.io.IOException
 
 class PageAdapter(private val pages: MutableList<AppPage>, private val context: Context, private val lifecycleOwner: LifecycleOwner): RecyclerView.Adapter<PageAdapter.MyViewHolder>(){
-
+    var isClickable: Boolean = true
     class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
         val imageView: ImageView = itemView.findViewById(R.id.imageViewItem)
         val textView: TextView = itemView.findViewById(R.id.textViewPageNumber)
@@ -58,20 +58,26 @@ class PageAdapter(private val pages: MutableList<AppPage>, private val context: 
             //holder.imageView.setImageURI(Uri.parse(newUri))
         }
         holder.view.setOnClickListener {
-            val int = Intent(context, TextPreviewActivity::class.java)
-            int.putExtra("text", pages[position].text)
-            int.putExtra("translatedText", pages[position].translatedText)
-            context.startActivity(int)
+            if(isClickable) {
+                val int = Intent(context, TextPreviewActivity::class.java)
+                int.putExtra("text", pages[position].text)
+                int.putExtra("translatedText", pages[position].translatedText)
+                context.startActivity(int)
+            }
         }
         holder.textView.text = "Страница №${position+1}"
         holder.buttonDelete.setOnClickListener {
-            pages.removeAt(position)
-            notifyItemChanged(position)
+            if(isClickable) {
+                pages.removeAt(position)
+                notifyItemChanged(position)
+            }
         }
         holder.imageView.setOnClickListener {
-            val showImageIntent = Intent(context, ImagePresentationActivity::class.java)
-            showImageIntent.putExtra("image", pages[position].bitmap?.toUri())
-            context.startActivity(showImageIntent)
+            if(isClickable) {
+                val showImageIntent = Intent(context, ImagePresentationActivity::class.java)
+                showImageIntent.putExtra("image", pages[position].bitmap?.toUri())
+                context.startActivity(showImageIntent)
+            }
         }
     }
 

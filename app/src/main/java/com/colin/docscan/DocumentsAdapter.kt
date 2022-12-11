@@ -15,6 +15,7 @@ class DocumentsAdapter(private val documents: MutableList<AppDocument>, private 
         val textViewPageCount: TextView = itemView.findViewById(R.id.textViewDocPageCount)
         val textViewName: TextView = itemView.findViewById(R.id.textViewDocName)
         val buttonDelete: ImageButton = itemView.findViewById(R.id.imageButtonDeleteDoc)
+        val buttonSaveAsPdf: ImageButton = itemView.findViewById(R.id.imageButtonSavePdf)
 
         override fun onClick(p0: View?) {
             lis.onPositionClicked(absoluteAdapterPosition, p0!!)
@@ -22,6 +23,7 @@ class DocumentsAdapter(private val documents: MutableList<AppDocument>, private 
 
         init {
             buttonDelete.setOnClickListener(this)
+            buttonSaveAsPdf.setOnClickListener(this)
             itemView.setOnClickListener(this)
         }
     }

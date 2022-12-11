@@ -10,15 +10,10 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.datastore.preferences.core.emptyPreferences
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.colin.docscan.databinding.ActivityNewDocumentBinding
 import com.colin.docscan.ui.notifications.SettingsFragment
 import com.google.mlkit.common.model.DownloadConditions
-import com.google.mlkit.nl.translate.TranslateLanguage
 import com.google.mlkit.nl.translate.Translation
 import com.google.mlkit.nl.translate.TranslatorOptions
 import kotlinx.coroutines.Dispatchers
@@ -90,10 +85,11 @@ class NewDocumentActivity : AppCompatActivity() {
             startActivityForResult(intForScan, 999)
         }
 
-        suspend fun translateText(text: String): String {
+        suspend fun translateText(text: String, sourceLang: Int, targetLang: Int): String {
+            val languages = resources.getStringArray(R.array.translator_languages_code)
             val options = TranslatorOptions.Builder()
-                .setSourceLanguage(TranslateLanguage.RUSSIAN)
-                .setTargetLanguage(TranslateLanguage.ENGLISH)
+                .setSourceLanguage(languages[sourceLang])
+                .setTargetLanguage(languages[targetLang])
                 .build()
             val translatorApi = Translation.getClient(options)
             var conditions = DownloadConditions.Builder().build()
@@ -137,6 +133,13 @@ class NewDocumentActivity : AppCompatActivity() {
 
         binding.buttonDocDone.setOnClickListener {
             binding.buttonDocDone.isClickable = false
+            binding.floatingActionButtonShotPage.isEnabled = false
+            binding.switchRecognition.isEnabled = false
+            binding.switchTranslate.isEnabled = false
+            binding.spinnerTargetLang.isEnabled = false
+            binding.spinnerSourceLang.isEnabled = false
+            (binding.RecyclerViewDocuments.adapter as PageAdapter).isClickable = false
+
             var count = 1
 
             if(recognition) {
@@ -158,7 +161,7 @@ class NewDocumentActivity : AppCompatActivity() {
                                 binding.buttonDocDone.text =
                                     "Обработка документа: ${count}/${doc.pages.size} (Выполняется перевод)"
                             }
-                            page.translatedText = translateText(text)
+                            page.translatedText = translateText(text, binding.spinnerSourceLang.selectedItemPosition, binding.spinnerTargetLang.selectedItemPosition)
                         }
                         count++
                         Log.d("RECOG", "COMPLETE")
@@ -189,7 +192,7 @@ class NewDocumentActivity : AppCompatActivity() {
                                         binding.buttonDocDone.text =
                                             "Обработка документа: ${count}/${doc.pages.size} (Выполняется перевод)"
                                     }
-                                    page.translatedText = translateText(page.text!!)
+                                    page.translatedText = translateText(page.text!!, binding.spinnerSourceLang.selectedItemPosition, binding.spinnerTargetLang.selectedItemPosition)
                                 } else {
                                     runOnUiThread {
                                         Toast.makeText(
@@ -225,12 +228,20 @@ class NewDocumentActivity : AppCompatActivity() {
             if (intent.extras?.get("Done") as Boolean) {
                 DocStorage.doneDocs.value?.set(position, doc)
             } else {
-                DocStorage.addDoneDoc(doc)
-                DocStorage.removeUndoneDoc(doc)
+                if(DataBaseSync.userId != "offline") {
+                    DocStorage.addDoneDoc(doc)
+                    DocStorage.removeUndoneDoc(doc)
+                } else {
+                    DocStorage.updateUndoneDocPost(position, doc)
+                }
             }
         } else {
-            DocStorage.addDoneDoc(doc)
-            DocStorage.removeUndoneDoc(doc)
+            if(DataBaseSync.userId != "offline") {
+                DocStorage.addDoneDoc(doc)
+                DocStorage.removeUndoneDoc(doc)
+            } else {
+                DocStorage.updateUndoneDocPost(position, doc)
+            }
         }
         DataBaseSync.updloadDocFiles(doc)
         DataBaseSync.addDocument(doc)
@@ -269,9 +280,9 @@ class NewDocumentActivity : AppCompatActivity() {
                 val position = globPos!!
                 if (intent.extras?.get("Edit") as Boolean) {
                     if (intent.extras?.get("Done") as Boolean) {
-                        DocStorage.doneDocs.value?.set(position, doc)
+                        DocStorage.updateDoneDoc(position, doc)
                     } else {
-                        DocStorage.undoneDocs.value?.set(position, doc)
+                        DocStorage.updateUndoneDoc(position, doc)
                     }
                 } else {
                     DocStorage.updateUndoneDoc(position, doc)

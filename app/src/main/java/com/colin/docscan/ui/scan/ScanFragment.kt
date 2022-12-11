@@ -2,10 +2,12 @@ package com.colin.docscan.ui.scan
 
 import DocStorage
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -90,10 +92,16 @@ class ScanFragment : Fragment() {
             }
 
             binding.RecyclerViewUndoneDocs.adapter = DocumentsAdapter(docs, object : DocumentsItemClickListener {
+                @RequiresApi(Build.VERSION_CODES.Q)
                 override fun onPositionClicked(position: Int, view: View) {
                     if(view.id == R.id.imageButtonDeleteDoc) {
                         DocStorage.removeUndoneDoc(DocStorage.undoneDocs.value?.get(position)!!)
                         binding.RecyclerViewUndoneDocs.adapter!!.notifyItemChanged(position)
+                    } else if(view.id == R.id.imageButtonSavePdf) {
+                        DocStorage.savePdf(
+                            DocStorage.undoneDocs.value?.get(position)!!,
+                            requireActivity().contentResolver,
+                            requireContext())
                     } else {
                         //val position =
                         //    binding.RecyclerViewUndoneDocs.getChildLayoutPosition(clickedView)

@@ -61,25 +61,67 @@
 
     <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/switchRecognition"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
         android:layout_marginBottom="8dp"
         android:minHeight="48dp"
         android:text="Выполнить распознавание текста"
-        app:layout_constraintBottom_toTopOf="@+id/buttonDocDone"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintBottom_toTopOf="@+id/switchTranslate"
+        app:layout_constraintEnd_toEndOf="@+id/switchTranslate"
+        app:layout_constraintStart_toStartOf="@+id/switchTranslate" />
 
     <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/switchTranslate"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="8dp"
         android:layout_marginBottom="8dp"
         android:minHeight="48dp"
         android:text="Выполнить перевод документа"
-        app:layout_constraintBottom_toTopOf="@+id/switchRecognition"
-        app:layout_constraintEnd_toEndOf="@+id/switchRecognition"
+        app:layout_constraintBottom_toTopOf="@+id/spinnerSourceLang"
+        app:layout_constraintEnd_toEndOf="@+id/spinnerTargetLang"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <Spinner
+        android:id="@+id/spinnerSourceLang"
+        android:layout_width="107dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="8dp"
+        android:contentDescription="@string/source_lang_title"
+        android:entries="@array/translator_languages"
+        app:layout_constraintBottom_toTopOf="@+id/buttonDocDone"
+        app:layout_constraintStart_toEndOf="@+id/textView4" />
+
+    <Spinner
+        android:id="@+id/spinnerTargetLang"
+        android:layout_width="107dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="8dp"
+        android:contentDescription="@string/source_lang_title"
+        android:entries="@array/translator_languages"
+        app:layout_constraintBottom_toTopOf="@+id/buttonDocDone"
+        app:layout_constraintStart_toEndOf="@+id/textView6" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="С"
+        app:layout_constraintBottom_toTopOf="@+id/buttonDocDone"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="на"
+        app:layout_constraintBottom_toTopOf="@+id/buttonDocDone"
+        app:layout_constraintStart_toEndOf="@+id/spinnerSourceLang" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
